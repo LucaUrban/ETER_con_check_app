@@ -28,38 +28,29 @@ st.title("Visual Information Quality Environment")
 st.write("In this part you can upload your csv file either dropping your file or browsing it. Then the application will start showing all of the charts for the Dataset. " +
          "To change the file to be analyzed you have to refresh the page.")
 uploaded_file = st.file_uploader("Choose a file")
-demo_data_radio = st.radio("What is the dataset you want to import:", ('Demo datset', 'ETER Dataset', 'Another dataset'))
 
-if demo_data_radio == 'Demo datset' or uploaded_file is not None:
-    if uploaded_file is not None:
-        if demo_data_radio == 'ETER Dataset':
-            table = pd.read_csv(uploaded_file, delimiter = ';', decimal = ',')
-            
-            for col in table.columns:
-                if table[col].dtypes == 'O' and not (col.startswith('Flag') or col.startswith('Notes')):
-                    table[col] = table[col].apply(lambda x: x.replace(',', '.') if not pd.isna(x) else x)
-            
-            for token in ['a', 'c', 'm',  'nc','s', 'x', 'xc', 'xr']:
-                table.replace({token: np.nan}, inplace = True)
-            
-            for col in table.columns:
-                table[col] = pd.to_numeric(table[col], errors = 'ignore')
-        else:
-            table = pd.read_csv(uploaded_file)
-    else:
-        table = pd.read_csv('https://raw.githubusercontent.com/LucaUrban/prova_streamlit/main/eter_ratio_fin_wf.csv')
+if uploaded_file is not None:
+    table = pd.read_csv(uploaded_file, delimiter = ';', decimal = ',')
 
-    # selection boxes columns
+    for col in table.columns:
+        if table[col].dtypes == 'O' and not (col.startswith('Flag') or col.startswith('Notes')):
+            table[col] = table[col].apply(lambda x: x.replace(',', '.') if not pd.isna(x) else x)
+
+    for token in ['a', 'c', 'm',  'nc','s', 'x', 'xc', 'xr']:
+        table.replace({token: np.nan}, inplace = True)
+
+    for col in table.columns:
+        table[col] = pd.to_numeric(table[col], errors = 'ignore')
+
+    # selection boxes columns and standard name columns
     col_an = [col for col in list(table) if len(table[col].unique()) < 10 or is_numeric_dtype(table[col])]
     col_mul = [col for col in list(table) if is_numeric_dtype(table[col])]
     lis_check = [{'label': col, 'value': col} for col in col_mul if col != col_mul[0]]
+    con_checks_id_col = 'ETER ID'; country_sel_col = 'Country Code'; cat_sel_col = 'Institution Category standardized'
 
     widget = st.selectbox("what is the widget you want to display:", ["Multidiannual Methodology", "Ratio Methodology"], 0)
 
     if widget == 'Ratio Methodology':
-        con_checks_id_col = st.sidebar.selectbox("Index col", table.columns, 0)
-        country_sel_col = st.sidebar.selectbox("Country selection column", ['-'] + list(table.columns), 0)
-        cat_sel_col = st.sidebar.selectbox("Category selection column", ['-'] + list(table.columns), 0)
         flag_issue_quantile = st.sidebar.number_input("Insert the quantile that will issue the flag (S2 and S3)", 0.0, 40.0, 5.0, 0.1)
         prob_cases_per = st.sidebar.number_input("Insert the percentage for the problematic cases", 0.0, 100.0, 20.0)
         p_value_trend_per = st.sidebar.number_input("Insert the p-value percentage for the trend estimation", 5.0, 50.0, 10.0)
@@ -287,9 +278,6 @@ if demo_data_radio == 'Demo datset' or uploaded_file is not None:
         else:
             st.warning('you have to choose a value for the field "Category selection column".')
     else:
-        con_checks_id_col = st.sidebar.selectbox("Index col", table.columns, 0)
-        country_sel_col = st.sidebar.selectbox("Country selection column", ['-'] + list(table.columns), 0)
-        cat_sel_col = st.sidebar.selectbox("Category selection column", ['-'] + list(table.columns), 0)
         retain_quantile = st.sidebar.number_input("Insert the quantile you want to exclude from the calculations (S1)", 1.0, 10.0, 2.0, 0.1)
         flag_issue_quantile = st.sidebar.number_input("Insert the quantile that will issue the flag (S2 and S3)", 35.0, 100.0, 95.0, 0.1)
         prob_cases_per = st.sidebar.number_input("Insert the percentage for the problematic cases", 0.0, 100.0, 20.0)

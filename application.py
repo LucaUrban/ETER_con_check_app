@@ -167,7 +167,7 @@ if demo_data_radio == 'Demo datset' or uploaded_file is not None:
                 if flag_notes_on:
                     summ_table = pd.DataFrame([[str(len(twos.intersection(dict_check_flags[con_checks_feature]))) + ' over ' + str(len(twos)), str(round((100 * len(twos.intersection(dict_check_flags[con_checks_feature]))) / len(twos), 2)) + '%'], 
                                                [str(len(dict_check_flags[con_checks_feature])) + ' / ' + str(len(ones.union(twos))), str(round(100 * (len(dict_check_flags[con_checks_feature]) / len(ones.union(twos))), 2)) + '%'], 
-                                               [str(len(dict_check_flags[con_checks_feature].difference(ones.union(twos)))), str(round((100 * len(dict_check_flags[con_checks_feature].difference(ones.union(twos)))) / len(dict_check_flags), 2)) + '%']], 
+                                               [str(len(dict_check_flags[con_checks_feature].difference(ones.union(twos)))), str(round((100 * len(dict_check_flags[con_checks_feature].difference(ones.union(twos)))) / len(dict_check_flags[con_checks_feature]), 2)) + '%']], 
                                                columns = ['Absolute Values', 'In percentage'], 
                                                index = ['Accuracy respect the confirmed cases', '#application cases vs. #standard cases', 'Number of not flagged cases'])
                 else:
@@ -182,7 +182,7 @@ if demo_data_radio == 'Demo datset' or uploaded_file is not None:
             st.table(table_fin_res)
             st.table(pd.DataFrame(list_prob_cases, columns = ['Variable', 'Country', 'Category', '% Value', 'Absolute values']))
 
-            if len(list(table['Class trend'].unique())) != 1:
+            if len(list(table['Class trend'].unique())) > 1:
                 dict_trend = {'Strong decrease': [], 'Weak decrease': [], 'Undetermined trend': [], 'Weak increase': [], 'Strong increase': []}; set_trend = set()
                 for inst in dict_check_flags[con_checks_feature]:
                     class_tr = int(table[table[con_checks_id_col] == inst]['Class trend'].unique()[0])

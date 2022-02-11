@@ -266,7 +266,7 @@ if uploaded_file is not None:
                     list_el.append('Impossible to calculate')
                 else:
                     list_el.append(list(dict_trend.keys())[df_inst['Class trend'].unique()[0]-1])
-                if flag_radio == 'Yes':
+                if new_ratio_radio == 'Existing one' and flag_radio == 'Yes':
                     if notes_col != '-':
                         if (inst not in ones) and (inst not in twos):
                             list_el.append(0)

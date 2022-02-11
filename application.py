@@ -247,7 +247,7 @@ if uploaded_file is not None:
                 descr_col = st.multiselect("Select the desciptive columns you want to add to the result dataset:", table.columns)
 
             t_col = [str(el) for el in sorted(table[time_col].unique())]; list_fin = []
-            if flag_radio == 'Yes':
+            if new_ratio_radio == 'Existing one' and flag_radio == 'Yes':
                 df_cols = [con_checks_id_col] + descr_col + t_col + ['Variable', 'Trend', 'Existing flag', 'Detected case']
             else:
                 df_cols = [con_checks_id_col] + descr_col + t_col + ['Variable', 'Trend', 'Detected case']

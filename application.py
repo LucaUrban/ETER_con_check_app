@@ -73,6 +73,13 @@ if uploaded_file is not None:
             with right1:
                 ratio_den = st.selectbox("Select the denominator column", col_mul)
             table = pd.concat([table, pd.DataFrame(np.divide(table[ratio_num].values, table[ratio_den].values), columns = [con_checks_feature])], axis = 1)
+            flag_radio = st.radio("Do you want to use the flags:", ('Yes', 'No'))
+            if flag_radio == 'Yes':
+                left2, right2 = st.columns(2)
+                with left2:
+                    flags_col = st.selectbox("Select the specific flag variable for the checks", table.columns)
+                with right2:
+                    notes_col = st.selectbox("Select the specific flag notes variable for the checks", ['-'] + list(table.columns))
             
 
         table['Class trend'] = 0
@@ -155,7 +162,7 @@ if uploaded_file is not None:
                             list_prob_cases.append(['Total', countries[i], 'All categories', str(num_app) + '%', str(num) + ' / ' + str(den)])
 
             flag_notes_on = False
-            if new_ratio_radio == 'Existing one' and flag_radio == 'Yes':
+            if flag_radio == 'Yes':
                 if table[flags_col].dtypes == 'O':
                     if notes_col == '-':
                         ones = set(table[(-pd.isna(table[flags_col])) & (table[flags_col] != 'p')][con_checks_id_col].values)
@@ -247,7 +254,7 @@ if uploaded_file is not None:
                 descr_col = st.multiselect("Select the desciptive columns you want to add to the result dataset:", table.columns)
 
             t_col = [str(el) for el in sorted(table[time_col].unique())]; list_fin = []
-            if new_ratio_radio == 'Existing one' and flag_radio == 'Yes':
+            if flag_radio == 'Yes':
                 df_cols = [con_checks_id_col] + descr_col + t_col + ['Variable', 'Trend', 'Existing flag', 'Detected case']
             else:
                 df_cols = [con_checks_id_col] + descr_col + t_col + ['Variable', 'Trend', 'Detected case']
@@ -266,7 +273,7 @@ if uploaded_file is not None:
                     list_el.append('Impossible to calculate')
                 else:
                     list_el.append(list(dict_trend.keys())[df_inst['Class trend'].unique()[0]-1])
-                if new_ratio_radio == 'Existing one' and flag_radio == 'Yes':
+                if flag_radio == 'Yes':
                     if notes_col != '-':
                         if (inst not in ones) and (inst not in twos):
                             list_el.append(0)
